@@ -1,0 +1,69 @@
+import:
+    net.skinsrestorer.api.SkinsRestorer
+    net.skinsrestorer.api.SkinsRestorerProvider
+    net.skinsrestorer.api.storage.PlayerStorage
+    net.skinsrestorer.api.storage.SkinStorage
+
+on load:
+    set {skinrestorer::api} to SkinsRestorerProvider.get()
+    set {skinrestorer::skinStorage} to {skinrestorer::api}.getSkinStorage()
+    set {skinrestorer::playerStorage} to {skinrestorer::api}.getPlayerStorage()
+
+
+
+
+
+
+command /setskin <string: string>:
+    usage: Command: /setskin <navn | url>
+    cooldown: 2 seconds
+    cooldown message: &8[&c!&8] &fDu skal lige vente lidt før du prøver igen!
+    aliases: /s
+    trigger:
+        set {_player} to player
+        if {_string} is set:
+            if {section::%{_player}'s uuid%} isn't set:
+
+                message "&8[&a!&8] &fIndlæser SkinData...." to {_player}
+
+                create section with {_string} stored in {section::%{_player}'s uuid%}:
+                    return {skinrestorer::skinStorage}.findOrCreateSkinData({_string})
+
+                addActionbar({_player})
+
+
+                run section {section::%{_player}'s uuid%} async with {_string} and store result in {_result} and wait
+
+                delete {section::%{_player}'s uuid%}
+
+                if {_result}.isEmpty():
+                    send action bar "&fIndlæser SkinData: &c&lFEJL" to {_player}
+                    message "&8[&c!&8] &fKunne ikke finde et skin via: &e%{_string}%" to {_player}
+                    play sound "BLOCK_AMETHYST_BLOCK_RESONATE" with seed 1 for {_player}
+                    stop
+                else if {_result} isn't set:
+                    send action bar "&fIndlæser SkinData: &c&lFEJL" to {_player}
+                    message "&8[&c!&8] &fKunne ikke finde et skin via: &e%{_string}%" to {_player}
+                    play sound "BLOCK_AMETHYST_BLOCK_RESONATE" with seed 1 for {_player}
+                    stop
+
+                send action bar "&fIndlæser SkinData: &e&lFundet" to {_player}
+                message "&8[&a!&8] &fSkinData blev fundet...." to {_player}
+                {skinrestorer::playerStorage}.setSkinIdOfPlayer({_player}.getUniqueId(), {_result}.get().getIdentifier())
+                {skinrestorer::api}.getSkinApplier(PLAYER.class).applySkin({_player})
+
+                message "&8[&a!&8] &fDit SkinData er blevet ændret!" to {_player}
+                send action bar "&fIndlæser SkinData: &a&lFærdiggjort" to {_player}
+
+
+function addActionbar(player: player):
+    set {_n} to -1
+    while {section::%{_player}'s uuid%} is set:
+        add 1 to {_n}
+        send action bar "&fIndlæser SkinData: &e%{_n} ? 0%s" to {_player} 
+        wait 1 second
+
+
+
+on tab complete of "/setskin" and "/s":
+	set tab completions for position 1 to "<navn>" and "<URL>"
