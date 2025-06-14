@@ -38,7 +38,7 @@ For at dette Skript virker korrekt, skal følgende plugins være installeret:
 ```bash
 /setskin Notch
 /setskin https://mineskin.org/skin/1234567890
-
+```
 
 
 📦 Installation
