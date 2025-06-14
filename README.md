@@ -19,7 +19,7 @@ For at dette Skript virker korrekt, skal følgende plugins være installeret:
 
 - 🔁 **Cooldown:** 2 sekunder  
 - 💬 **Brug:** `/setskin <navn | url>`  
-- 🔄 Understøtter både Minecraft-brugernavne og links til skins fra f.eks. **MinersNeedCoolShoes** eller **Mineskin.org**
+- 🔄 Understøtter både Minecraft-brugernavne og links til skins fra f.eks. **Mineskin.org**
 
 ---
 
